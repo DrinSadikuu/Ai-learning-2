@@ -18,11 +18,11 @@ async def main():
             print("Available tools:", [tool.name for tool in tools.tools])
 
             result = await session.call_tool(
-                "add",
-                arguments={"a": 5, "b": 3}
+                "get_github_user",
+                arguments={"username": "DrinSadikuu"}
             )
 
-            print("Result:", result)
+            print("GitHub user:", result.content)
 
 
 asyncio.run(main())
