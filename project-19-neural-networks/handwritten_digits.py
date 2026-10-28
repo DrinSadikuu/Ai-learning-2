@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, Subset
 from torchvision import datasets, transforms
+import matplotlib.pyplot as plt
 
 # 1. Download and prepare MNIST
 transform = transforms.ToTensor()
@@ -93,9 +94,34 @@ with torch.no_grad():
     predictions = model(images)
     predicted_digits = predictions.argmax(dim=1)
 
-print("\nFirst 10 predictions:")
+fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+
 for i in range(10):
-    print(
-        f"Actual: {labels[i].item()} | "
-        f"Predicted: {predicted_digits[i].item()}"
-    )
+    ax = axes[i // 5, i % 5]
+
+    ax.imshow(images[i].squeeze(), cmap="gray")
+
+    actual = labels[i].item()
+    predicted = predicted_digits[i].item()
+
+    ax.set_title(f"Actual: {actual}\nPredicted: {predicted}")
+    ax.axis("off")
+
+plt.tight_layout()
+plt.show()
+
+# 7. Inspect a wrong prediction
+image_index = 8
+
+with torch.no_grad():
+    scores = model(images[image_index].unsqueeze(0))
+    probabilities = torch.softmax(scores, dim=1)
+
+print("\nDigit scores for image 8:")
+
+for digit in range(10):
+    probability = probabilities[0][digit].item()
+    print(f"Digit {digit}: {probability:.2%}")
+
+print("Actual digit:", labels[image_index].item())
+print("Predicted digit:", probabilities.argmax(dim=1).item())
